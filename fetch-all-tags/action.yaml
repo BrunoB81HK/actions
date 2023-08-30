@@ -1,0 +1,27 @@
+name: Fetch all tags
+description: An action to fetch all tags in the current GitHub repository.
+
+outputs:
+  matrix-json:
+    description: The tags as a JSON object list
+    value: ${{ steps.set-matrix.outputs.matrix }}
+
+runs:
+  using: composite
+  steps:
+  - name: Fetch the tags
+    uses: octokit/request-action@v2.x
+    id: get_tags
+    with:
+      route: GET /repos/{owner-repo}/git/matching-refs/tags
+      owner-repo: ${{ github.repository }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
+  - name: Prepare the matrix
+    id: set-matrix
+    shell: bash
+    env:
+      input: ${{ steps.get_tags.outputs.data }}
+    run: |
+      echo "matrix=$(echo "$input" | jq "[.[] | select(.[\"ref\"] | startswith(\"refs/tags/v\")) | {\"tag\": .[\"ref\"] | sub(\"^refs/tags/\"; \"\")}]" | jq -sRr 'gsub("\n";"")')" >> $GITHUB_OUTPUT

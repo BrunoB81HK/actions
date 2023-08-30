@@ -1,0 +1,50 @@
+name: LaTeX Compiler
+description: A Docker image with all the tools ready to compile a LaTeX project with pdflatex and bibtex.
+
+inputs:
+  file:
+    description: The tex main file of the LaTeX project.
+    required: true
+
+  root:
+    description: The root directory of the LaTeX project. Default to the root directory of the repository.
+    required: true
+    default: ${{ github.workspace }}
+
+  upload-artifacts:
+    description: Set to true to automatically upload the artifacts in `pdf-out`. Default is false.
+    default: false
+
+  artifacts-suffix:
+    description: The suffix to use when uploading the artifacts in `pdf-out<artifacts-suffix>`.
+    default: ""
+
+outputs:
+  pdf-name:
+    description: The name of the pdf file.
+    value: ${{ format('{0}.pdf', inputs.file) }}
+
+  optimized-pdf-name:
+    description: The name of the optimized pdf file.
+    value: ${{ format('{0}_opt.pdf', inputs.file) }}
+
+  # pdfs-matrix:
+  #   description: The name of the pdf files as a JSON list for use with matrix strategy.
+  #   value: [ { "name": "${{ format('{0}.pdf', inputs.file) }}" }, { "name": "${{ format('{0}_out.pdf', inputs.file) }}" } ]
+
+runs:
+  using: composite
+  steps:
+    - name: Run the compilation process in a Docker container
+      uses: addnab/docker-run-action@v3
+      with:
+        image: ghcr.io/brunob81hk/latex-img:v0.2
+        options: --rm -v ${{ inputs.root }}:/data/
+        run: /bin/bash /entrypoint.sh -f ${{ inputs.file }}
+
+    - name: Upload the pdf as artifacts
+      uses: actions/upload-artifact@v3
+      if: ${{ inputs.upload-artifacts }}
+      with:
+        name: pdf-out${{ inputs.artifacts-suffix }}
+        path: ${{ github.workspace }}/*.pdf
