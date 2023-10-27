@@ -48,3 +48,4 @@ runs:
       with:
         name: pdf-out${{ inputs.artifacts-suffix }}
         path: ${{ github.workspace }}/*.pdf
+        retention-days: 1
