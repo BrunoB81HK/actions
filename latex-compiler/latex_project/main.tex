@@ -1,0 +1,22 @@
+\documentclass{article}
+
+\usepackage{natbib}
+\usepackage{svg}
+
+\graphicspath{{./assets/}}
+
+\begin{document}
+
+    Hello World!
+
+    \begin{figure}[t]
+        \centering
+        \includesvg[width=\columnwidth]{LaTeX}
+        \caption{The Latex logo~\cite{alejo2083_latex_2019}}
+        \label{fig:actuators_section}
+    \end{figure}
+
+    \bibliographystyle{abbrvnat}
+    \bibliography{biblio}
+
+\end{document}

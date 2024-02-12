@@ -38,7 +38,7 @@ runs:
     - name: Run the compilation process in a Docker container
       uses: addnab/docker-run-action@v3
       with:
-        image: ghcr.io/brunob81hk/latex-img:v0.2
+        image: ghcr.io/brunob81hk/latex-img:latest
         options: --rm -v ${{ inputs.root }}:/data/
         run: /bin/bash /entrypoint.sh -f ${{ inputs.file }}
 
